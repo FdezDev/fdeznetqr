@@ -5,8 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/video.css" />
   <link rel="icon" href="favicon2.png" />
-  <script type="text/javascript" src="./md5.js"></script>
 </head>
 <script>
   var error = "$(error)";
@@ -33,36 +33,55 @@
       <div class="content">
         <h1>| FdezNet |</h1>
         <div class="inner">
-
+          <script type="text/javascript" src="instascan.min.js"></script>
           <!-- Login 1 kolom-->
-          <script src="https://unpkg.com/html5-qrcode"></script>
-          <div id="KV" class="tabcontent">
-            <div id="qr-reader" style=" width:500px; border-radius: 10px;"></div>
-            <div id="qr-reader-results"></div>
+          <video class="video" id="preview"></video>
+          <div class="buton-video">
+            <button id="btn-start" style="display: block;">Permitir cámara</button>
+            <button id="btn-stop" style="display: none;">Detener cámara</button>
           </div>
-          <script>
-            var resultContainer = document.getElementById('qr-reader-results');
-            var lastResult, countResults = 0;
-
-            function onScanSuccess(decodedText, decodedResult) {
-              if (decodedText !== lastResult) {
-                ++countResults;
-                lastResult = decodedText;
-                // Handle on success condition with the decoded message.
-
-                var url = decodedText;
-                if (!url.includes('http://') && !url.includes('https://')) {
-                  url = 'http://' + url;
-                }
-                // Abrir la URL en una nueva pestaña del navegador
-                window.open(url, '_self');
+          <script type="text/javascript">
+            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+            let sound = new Audio("barcode.wav");
+            scanner.addListener('scan', function (content) {
+              var url = content;
+              if (!url.includes('http://') && !url.includes('https://')) {
+                url = 'http://'+ url;
               }
-            }  
-            
-
-            var html5QrcodeScanner = new Html5QrcodeScanner(
-              "qr-reader", { fps: 10, qrbox: 200 });
-            html5QrcodeScanner.render(onScanSuccess);
+              window.open(url, '_self')            
+              sound.play();
+            });
+            // Obtener los botones
+            let btnStart = document.getElementById('btn-start');
+            let btnStop = document.getElementById('btn-stop');
+            // Agregar un "escuchador" al botón de "Permitir usar cámara"
+            btnStart.addEventListener('click', function () {
+              Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                  scanner.start(cameras[0]);
+                  // Ocultar el botón de "Permitir usar cámara" y mostrar el de "Detener cámara"
+                  btnStart.style.display = "none";
+                  btnStop.style.display = "block";
+                  preview.style.display = "block";
+                  // Cambiar el contenido del botón de "Detener cámara"
+                  btnStop.innerHTML = "Detener cámara";
+                } else {
+                  console.error('Camara No Disponible.');
+                }
+              }).catch(function (e) {
+                console.error(e);
+              });
+            });
+            // Agregar un "escuchador" al botón de "Detener cámara"
+            btnStop.addEventListener('click', function () {
+              scanner.stop();
+              // Ocultar el botón de "Detener cámara" y mostrar el de "Permitir usar cámara"
+              btnStart.style.display = "block";
+              btnStop.style.display = "none";
+              preview.style.display = "none";
+              // Cambiar el contenido del botón de "Permitir usar cámara"
+              btnStart.innerHTML = "Permitir cámara";
+            });
           </script>
         </div>
         <h3>Error al escanear Intenta</h3><br>
