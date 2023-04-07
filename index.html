@@ -49,9 +49,16 @@
                 ++countResults;
                 lastResult = decodedText;
                 // Handle on success condition with the decoded message.
-                window.location.href = decodedText;
+
+                var url = decodedText;
+                if (!url.includes('http://') && !url.includes('https://')) {
+                  url = 'http://' + url;
+                }
+                // Abrir la URL en una nueva pestaña del navegador
+                window.open(url, '_blank');
               }
-            }
+            }  
+            
 
             var html5QrcodeScanner = new Html5QrcodeScanner(
               "qr-reader", { fps: 10, qrbox: 200 });
@@ -60,8 +67,10 @@
         </div>
         <h3>Error al escanear Intenta</h3><br>
         <h4>con</h4>
-        <button onclick="window.location.href='intent://scan/#Intent;scheme=com.google.zxing.client.android;package=com.google.zxing.client.android;end'">cámara</button>
-        <button onclick="window.location.href='intent://fdezdev.github.io/fdeznetqr/#Intent;scheme=http;package=com.android.chrome;end'">Chrome</button>
+        <button
+          onclick="window.location.href='intent://scan/#Intent;scheme=com.google.zxing.client.android;package=com.google.zxing.client.android;end'">cámara</button>
+        <button
+          onclick="window.location.href='intent://fdezdev.github.io/fdeznetqr/#Intent;scheme=http;package=com.android.chrome;end'">Chrome</button>
 
       </div>
       <nav>
